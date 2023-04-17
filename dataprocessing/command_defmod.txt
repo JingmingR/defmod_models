@@ -1,0 +1,175 @@
+/home/jingmingruan/TUD/petsc-3.13.0/linux-gnu-opt/bin/mpirun -np 2 xterm -e gdb /home/jingmingruan/TUD/defmod-build/test/defmod-swpc/bin/defmod
+
+b m_fvfe.F90:185
+b main.F90:417
+
+run -f P2D_pp.inp -pc_type lu -pc_factor_mat_solver_type mumps -fv 3
+run -f P3D.inp -pc_type lu -pc_factor_mat_solver_type mumps -fv 3
+
+/home/jingmingruan/TUD/petsc-3.13.0/linux-gnu-opt/bin/mpirun -np 8 ~/TUD/defmod-build/20-04-2020/defmod-swpc/bin/defmod -f P2D_pp.inp -pc_type lu -pc_factor_mat_solver_type mumps -fv 3 -ss 1
+
+# paraview
+inputs[0].PointData['displacements']-inputs[1].PointData['displacements']
+
+# cloud storage TU Delft
+jingmingruan@linux-bastion.tudelft.nl:/tudelft.net/staff-umbrella/  
+/usr/bin/rsync -rltv --bwlimit=10m --rsh=ssh . jingmingruan@linux-bastion.tudelft.nl:/tudelft.net/staff-umbrella/DeepImageModel/delftblue
+
+# runing OpenSWPC
+time mpirun -n 4~ /TUD/defmod-build/20-04-2020/defmod-swpc/bin//swpc_3d.x -i SCEC10_dsp.inf  -r SCEC10_dsp
+
+/home/jingmingruan/TUD/petsc-3.13.0/linux-gnu-opt/bin/mpirun -np 8 /home/jingmingruan/TUD/defmod-build/test/defmod-swpc/bin/defmod -f P2D_pp.inp -pc_type lu -pc_factor_mat_solver_type mumps -fv 3 
+
+/home/jingmingruan/TUD/petsc-3.13.0/linux-gnu-opt/bin/mpirun -np 4 /home/jingmingruan/TUD/defmod-build/test/defmod-swpc/bin/defmod -f P3D.inp -pc_type lu -pc_factor_mat_solver_type mumps -ss 1
+
+
+~/petsc/debug-defmod/bin/mpirun -np 2 xterm -e gdb ~/defmod-build/test/defmod-swpc/bin/defmod
+
+~/petsc/debug-defmod/bin/mpirun -np 4 ~/defmod-build/test/defmod-swpc/bin/defmod -f P2D_pp.inp -fv 3 -ss 1
+
+~/petsc/debug-defmod/bin/mpirun -np 8 ~/defmod-build/test/defmod-swpc/bin/defmod -f P2D_pp.inp -pc_type lu -pc_factor_mat_solver_type mumps -fv 3 -ss 1
+
+# running on cluster (texel)
+source ~/.bashrc_defmod
+nice mpirun -np 48 ~/defmod-build/test/defmod-swpc/bin/defmod -f P3DX.inp -pc_type lu -pc_factor_mat_solver_type mumps -ksp_monitor -ksp_error_if_not_converged -fv 3 -ss 1
+python ../../dataprocessing/fe_sort.py -f Buijze3D_offsetslant -dmn 3 -slip 1 -dyn 0 -rsf 0 -poro 1 -nobs 0 -seis 0
+
+nice mpirun -np 20 ~/defmod-build/test/defmod-swpc/bin/swpc_3d.x -i P3DX.inf -r P3DX
+
+jupyter notebook --no-browser --ip=0.0.0.0 --port=8080
+jupyter-lab --no-browser --ip=0.0.0.0 --port=8080
+ssh -N -L localhost:8889:127.0.0.1:8080 ruanjm@texel.ta.tudelft.nl
+
+b m_fvfe.F90:97
+b m_fvfe.F90:212
+b m_fvfe.F90:300
+b m_fvfe.F90:519
+
+run -f /home/jingmingruan/Desktop/2Dexample/P2D/P2D_pp.inp -fv 3 -ss 1
+
+run -f P2D_pp.inp -ss 1
+run -f P2D_pp.inp -fv 3 -ss 1
+run -f F3D_bd.inp -fv 1 -ss 1
+
+
+run -f P2D_pp.inp -fv 3 -ss 1
+
+/opt/intel/compilers_and_libraries_2018.3.222/linux/mkl/lib/intel64
+
+
+# install defmod on cluster, note: don't download mpich, it doesn't compatible with the cluster, use intel compiler instead!!! below
+
+./configure --with-blaslapack-dir=/opt/intel/compilers_and_libraries_2018.3.222/linux/mkl/lib/intel64 --download-metis --download-parmetis --download-scalapack --download-mumps --download-hdf5 --with-shared-libraries=0 --with-debugging=0 --COPTFLAGS=-O2 --FOPTFLAGS=-O2 --CXXOPTFLAGS=-O2
+
+            Checking for a functional hdf5
+                    Looking for HDF5 at git.hdf5, hg.hdf5 or a directory starting with ['hdf5']
+                    Could not locate an existing copy of HDF5:
+                      ['git.metis', 'git.sowing', 'openmpi-3.1.4', 'git.parmetis']
+
+
+./configure --prefix=/home/jingmingruan/petsc/debug-defmod MAKE=/usr/bin/make --libdir=/home/jingmingruan/petsc/debug-defmod/lib CC="/home/jingmingruan/petsc/debug-defmod/bin/mpicc" CFLAGS="-fstack-protector -O3" AR="/usr/bin/ar" ARFLAGS="cr" CXX="/home/jingmingruan/petsc/debug-defmod/bin/mpicxx" CXXFLAGS="-fstack-protector -O3" F90="/home/jingmingruan/petsc/debug-defmod/bin/mpif90" F90FLAGS="-ffree-line-length-0 -O3" FFLAGS="-ffree-line-length-0 -O3" FC="/home/jingmingruan/petsc/debug-defmod/bin/mpif90" F77="/home/jingmingruan/petsc/debug-defmod/bin/mpif90" FCFLAGS="-ffree-line-length-0 -O3" --disable-shared --with-default-api-version=v18 --enable-parallel --enable-fortran --with-zlib=no --with-szlib=no CPPFLAGS="-I/home/jingmingruan/petsc/debug-defmod/include" LIBS="-lm"
+
+./configure --CFLAGS='-O3' --CXXFLAGS='-O3' --FFLAGS='-O3' --with-debugging=no --download-mpich=yes --download-hdf5=yes --download-fblaslapack=yes --download-metis=yes --download-parmetis=yes
+
+./configure --with-blaslapack-dir=/opt/intel/mkl/lib/intel64 --download-mpich=yes --download-hdf5 --download-scalapack --download-parmetis --download-mumps --download-metis --download-ptscotch --download-scotch --download-hypre --download-ml --with-shared-libraries=0 --with-debugging=1 COPTFLAGS=-O3 FOPTFLAGS=-O3 CXXOPTFLAGS=-O3
+
+
+# compiling OpenSWPC
+NCLIB = -L[NetCDF-fortan]/lib -L[NetCDF]/lib
+NCINC = -I[NetCDF-fortan]/include
+
+# using yum on cluster: (check out ~/.bashrc_yum for path and ld_lirabry_path) 
+https://stackoverflow.com/questions/36651091/how-to-install-packages-in-linux-centos-without-root-user-with-automatic-depen
+# unpacking rpm files into folders
+https://askubuntu.com/questions/476832/extracting-multiple-rpm-files-and-overwrite-existing-files
+
+yumdownloader --destdir ~/rpm --resolve *(packages:netcdf-devel netcdf-fortran)
+
+
+cd /var/tmp/yum-ruanjm-Ntac28/
+for rpm in /vardim/home/ruanjm/rpm/*.rpm; do rpm2cpio $rpm | cpio -idm; done
+
+# note for installing cmake 
+# delete the "/usr/lib64" in the LD PATH, which has a outdated library with gcc 7.1
+# e.g.
+
+# note for using yum and install SWPC3D on cluster:
+#!! when use yum, you must use the default gnu compiler to read the header from yum packages. !!!
+# when use mpi*** export CC & FC to define the compiler you want to use.
+# fortran header in yum locates in the directory:-I/var/tmp/yum-ruanjm-Ntac28/usr/lib64/gfortran/modules
+# 
+
+# setup for swpc3d
+NCLIB = -L/var/tmp/yum-ruanjm-Ntac28/usr/lib64 
+NCINC = -I/var/tmp/yum-ruanjm-Ntac28/usr/include -I/var/tmp/yum-ruanjm-Ntac28/usr/lib64/gfortran/modules
+
+# makefile.arch for swpc3d
+ifeq ($(arch),centos-ifort)
+
+  FC      =  mpif90
+  FFLAGS  = -O2 -ffast-math -D_INFO -D_ASSERT -I../include -fopenmp
+  NCFLAG  = -D_NETCDF
+  NCLIB   = -L/var/tmp/yum-ruanjm-Ntac28/usr/lib64
+  NCINC   = -I/var/tmp/yum-ruanjm-Ntac28/usr/include -I/var/tmp/yum-ruanjm-Ntac28/usr/lib64/gfortran/modules
+  NETCDF  = -lnetcdff -lnetcdf -lhdf5 -lhdf5_fortran
+
+  ifeq ($(debug),true)
+    FFLAGS  = -Wall -pedantic -fbounds-check -O -Wuninitialized -fconvert=big-endian\
+                  -ffpe-trap=invalid,zero,overflow -fbacktrace -O0 \
+                  -D_INFO -D_ASSERT -D_DEBUG -I../include
+  endif
+
+endif
+
+
+fln/fls normal and shear force on the fault;
+fp, hydraulic force from pressure;
+qu, fluid source due to deformation;
+sh/ss: shear and normal stresses;
+
+
+# command to setup SPECFEM3D on tu cluster
+# MPI_INC depends on the mpif90 location from the loaded module default is below!!
+./configure FC=gfortran CC=gcc MPIFC=mpif90 MPI_INC=/vardim/home/thorbcke/tools/pgi/linux86-64/2017/mpi/openmpi-1.10.2/include --with-mpi
+
+# working
+module load intel/18....
+./configure FC=gfortran CC=gcc MPIFC=mpif90 --with-mpi MPI_INC=/opt/intel/compilers_and_libraries_2018.3.222/linux/mpi/intel64/include/
+
+# Delftblue
+export PETSC_DIR=/home/jingmingruan/petsc
+export PETSC_ARCH=dblue-ompi-gcc-2022r2
+module load 2022r2
+module load openmpi
+
+srun --cpus-per-task=1 --mem-per-cpu=4G --account=research-ceg-gse --time=2:00:00 --pty bash
+
+squeue -u jingmingruan
+
+scp ./xx jingmingruan@login.delftblue.tudelft.nl:/home/jingmingruan/2D/benchmark
+/scratch/jingmingruan/
+
+./configure --download-fblaslapack --with-mpi=1 --with-cc=mpicc --with-fc=mpif90 --with-cxx=mpicxx --download-hdf5 --download-hdf5-fortran-bindings --download-scalapack --download-parmetis --download-mumps --download-metis --download-cmake --with-shared-libraries=0 --with-debugging=0 COPTFLAGS=-O3 FOPTFLAGS=-O3 CXXOPTFLAGS=-O3
+
+# netcdf 
+
+module load 2022r2  openmpi/4.1.1 netcdf-c/4.8.1 netcdf-fortran/4.5.3 hdf5/1.10.7
+
+NCLIB   = -L$(NETCDF_FORTRAN_ROOT)/lib -L$(NETCDF_C_ROOT)/lib  -L$(HDF5_ROOT)/lib
+NCINC   = -I$(NETCDF_FORTRAN_ROOT)/include -I$(HDF5_ROOT)/include
+
+cd src/swpc3d  
+make arch=Dblue-ompi debug=false  
+cd src/tool  
+make arch=Dblue-ompi
+
+
+# DelftBlue cases:
+Paraview:
+ssh -X jingmingruan@login.delftblue.tudelft.nl -L 3333:localhost:12349
+module load 2022r2
+module load paraview
+
+pvserver -sp=12349
+
+
